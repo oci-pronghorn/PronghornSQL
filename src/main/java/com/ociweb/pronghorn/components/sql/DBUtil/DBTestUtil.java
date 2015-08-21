@@ -35,7 +35,8 @@ public class DBTestUtil {
     
     public static FieldReferenceOffsetManager metaFROM = MetaMessageDefs.FROM;
     
-//    public static List<Object> runTest(Runnable sqlStage, PronghornStage dumper) {
+    public static List<Object> runTest(Runnable sqlStage, PronghornStage dumper) {
+        throw new UnsupportedOperationException("Must be rewriten to match.");
 //        try {
 //            ExecutorService service = Executors.newFixedThreadPool(2);
 //            service.submit(dumper);
@@ -51,7 +52,8 @@ public class DBTestUtil {
 //        }
 //
 //        return dumper.result();
-//    }
+//        return null;
+    }
     
     
     public static void executeSQL(Connection conn, String sql) throws SQLException {

@@ -48,6 +48,29 @@
         	<version>2.4</version>
         </dependency>
     
+        <dependency>
+        	<groupId>org.apache.derby</groupId>
+        	<artifactId>derby</artifactId>
+        	<version>10.11.1.1</version>
+        </dependency>
+        <dependency>
+        	<groupId>com.h2database</groupId>
+        	<artifactId>h2</artifactId>
+        	<version>1.4.182</version>
+        </dependency>
+        <dependency>
+        	<groupId>org.hsqldb</groupId>
+        	<artifactId>hsqldb</artifactId>
+        	<version>2.3.2</version>
+        </dependency>
+        <dependency>  <!-- replace with TDS? -->
+            <groupId>sqljdbc</groupId>
+            <artifactId>sqljdbc</artifactId>
+            <version>4.1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/sqljdbc41.jar</systemPath>
+        </dependency>
+    
       	<dependency>
 		      <groupId>junit</groupId>
 		      <artifactId>junit</artifactId>
