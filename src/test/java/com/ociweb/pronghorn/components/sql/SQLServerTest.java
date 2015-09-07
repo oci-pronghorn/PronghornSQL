@@ -8,8 +8,8 @@ import static com.ociweb.pronghorn.components.sql.DBUtil.DBTestUtil.parseElement
 import static com.ociweb.pronghorn.components.sql.DBUtil.DBTestUtil.runTest;
 import static com.ociweb.pronghorn.components.sql.DBUtil.DBTestUtil.unicodeEuroGlyph;
 import static com.ociweb.pronghorn.components.sql.DBUtil.DBTestUtil.unicodeTwoHeartsGlyph;
-import static com.ociweb.pronghorn.ring.FieldReferenceOffsetManager.lookupFieldLocator;
-import static com.ociweb.pronghorn.ring.FieldReferenceOffsetManager.lookupTemplateLocator;
+import static com.ociweb.pronghorn.pipe.FieldReferenceOffsetManager.lookupFieldLocator;
+import static com.ociweb.pronghorn.pipe.FieldReferenceOffsetManager.lookupTemplateLocator;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -32,10 +32,10 @@ import com.ociweb.pronghorn.components.sql.DBUtil.DBUtil;
 import com.ociweb.pronghorn.components.sql.DBUtil.MetaDumper;
 import com.ociweb.pronghorn.components.sql.DBUtil.UserDumper;
 import com.ociweb.pronghorn.components.sql.SQLServerComponent.SQLServerStage;
-import com.ociweb.pronghorn.ring.FieldReferenceOffsetManager;
-import com.ociweb.pronghorn.ring.RingBuffer;
-import com.ociweb.pronghorn.ring.RingBufferConfig;
-import com.ociweb.pronghorn.ring.RingReader;
+import com.ociweb.pronghorn.pipe.FieldReferenceOffsetManager;
+import com.ociweb.pronghorn.pipe.Pipe;
+import com.ociweb.pronghorn.pipe.PipeConfig;
+import com.ociweb.pronghorn.pipe.PipeReader;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 
 public class SQLServerTest {
@@ -301,7 +301,7 @@ public class SQLServerTest {
         // System.out.println("runMetaTest(): '" + sql + "' " + emitFieldNames + " " + emitRowMarkers);
         Connection conn = getConnection();
         try {
-            RingBuffer output = new RingBuffer(new RingBufferConfig((byte) 10, (byte) 24, null, metaFROM));
+            Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, metaFROM));
             GraphManager gm = new GraphManager();
             SQLServerStage stage = new SQLServerStage(conn, sql, emitFieldNames, emitRowMarkers, output);
             MetaDumper dumper = new MetaDumper(gm, output);
@@ -313,7 +313,7 @@ public class SQLServerTest {
 
     private List<Object> runMetaTest(PreparedStatement stmt, boolean emitFieldNames, boolean emitRowMarkers) throws Exception {
         // System.out.println("runMetaTest(): '" + stmt.toString() + "' " + emitFieldNames + " " + emitRowMarkers);
-        RingBuffer output = new RingBuffer(new RingBufferConfig((byte) 10, (byte) 24, null, metaFROM));
+        Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, metaFROM));
         GraphManager gm = new GraphManager();
         SQLServerStage stage = new SQLServerStage(stmt, emitFieldNames, emitRowMarkers, output);
         MetaDumper dumper = new MetaDumper(gm, output);
@@ -406,8 +406,8 @@ public class SQLServerTest {
     }
 
     class INTDecoder implements UserDumper.Decoder {
-        public boolean decode(RingBuffer ring, int templateID, List<Object> output) throws Exception {
-            FieldReferenceOffsetManager FROM = RingBuffer.from(ring);
+        public boolean decode(Pipe ring, int templateID, List<Object> output) throws Exception {
+            FieldReferenceOffsetManager FROM = Pipe.from(ring);
             final int MSG_LOC = lookupTemplateLocator("INTData", FROM);
             final int FIELD_LOC = lookupFieldLocator("FIELD", MSG_LOC, FROM);
             final int FIELDNULLABLE_ISNULL_LOC = lookupFieldLocator("FIELDNULLABLE_IsNull", MSG_LOC, FROM);
@@ -415,13 +415,13 @@ public class SQLServerTest {
 
             switch (templateID) {
             case 1:
-                int v = RingReader.readInt(ring, FIELD_LOC);
+                int v = PipeReader.readInt(ring, FIELD_LOC);
                 logger.info("read FIELD, adding FIELD: " + v);
                 output.add(v);
-                v = RingReader.readInt(ring, FIELDNULLABLE_ISNULL_LOC);
+                v = PipeReader.readInt(ring, FIELDNULLABLE_ISNULL_LOC);
                 logger.info("read FIELDNULLABLE_ISNULL: " + v);
                 boolean FIELDNULLABLE_isNull = (v != 0);
-                v = RingReader.readInt(ring, FIELDNULLABLE_LOC);
+                v = PipeReader.readInt(ring, FIELDNULLABLE_LOC);
                 logger.info("read FIELDNULLABLE: " + v);
                 if (FIELDNULLABLE_isNull) {
                     logger.info("adding FIELDNULLABLE null");

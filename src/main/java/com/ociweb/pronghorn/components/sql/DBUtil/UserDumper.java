@@ -1,12 +1,12 @@
 package com.ociweb.pronghorn.components.sql.DBUtil;
 
-import com.ociweb.pronghorn.ring.FieldReferenceOffsetManager;
-import com.ociweb.pronghorn.ring.RingBuffer;
-import com.ociweb.pronghorn.ring.RingReader;
+import com.ociweb.pronghorn.pipe.FieldReferenceOffsetManager;
+import com.ociweb.pronghorn.pipe.Pipe;
+import com.ociweb.pronghorn.pipe.PipeReader;
 import com.ociweb.pronghorn.stage.PronghornStage;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 
-import static com.ociweb.pronghorn.ring.RingReader.*;
+import static com.ociweb.pronghorn.pipe.PipeReader.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,16 +15,16 @@ import org.apache.commons.lang3.NotImplementedException;
 public class UserDumper extends PronghornStage {
     
     public interface Decoder {
-        public abstract boolean decode(RingBuffer ring, int templateID, List<Object> output) throws Exception;
+        public abstract boolean decode(Pipe ring, int templateID, List<Object> output) throws Exception;
     }
 
-    private RingBuffer ring;
+    private Pipe ring;
     private Decoder decoder;
     private List<Object> output;
     private boolean loop = true;
     private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(UserDumper.class);
     
-    public UserDumper(GraphManager gm, RingBuffer ring, Decoder decoder) {
+    public UserDumper(GraphManager gm, Pipe ring, Decoder decoder) {
         super(gm,ring, NONE);
         this.ring = ring;
         this.decoder = decoder;
@@ -34,7 +34,7 @@ public class UserDumper extends PronghornStage {
     @Override
     public void run() {
         try {
-            FieldReferenceOffsetManager FROM = RingBuffer.from(ring);
+            FieldReferenceOffsetManager FROM = Pipe.from(ring);
 
             do {
                 if (tryReadFragment(ring)) {
@@ -50,7 +50,7 @@ public class UserDumper extends PronghornStage {
                     // do something else
                     Thread.yield();
                 }
-            } while (loop || (RingBuffer.contentRemaining(ring) > 0));
+            } while (loop || (Pipe.contentRemaining(ring) > 0));
         } catch (Exception e) {
             logger.error("Dumper: " + e.getClass().getName() + ": " + e.getMessage(), e);
         }

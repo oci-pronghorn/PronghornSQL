@@ -26,12 +26,12 @@ import java.sql.Types;
 import org.apache.commons.lang3.NotImplementedException;
 
 import com.ociweb.pronghorn.components.sql.DBUtil.Stmt;
-import com.ociweb.pronghorn.ring.FieldReferenceOffsetManager;
-import com.ociweb.pronghorn.ring.RingBuffer;
+import com.ociweb.pronghorn.pipe.FieldReferenceOffsetManager;
+import com.ociweb.pronghorn.pipe.Pipe;
 
 public class SQLServerStage implements Runnable {
     private org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(SQLServerStage.class);
-    private RingBuffer ring = null;
+    private Pipe ring = null;
     private boolean emitFieldNames = false;
     private boolean emitRowMarkers = false;
     private Stmt stmt = null;
@@ -39,7 +39,7 @@ public class SQLServerStage implements Runnable {
     private String message = null;
     private FieldReferenceOffsetManager FROM = null;
 
-    public SQLServerStage(Connection conn, String sql, boolean emitFieldNames, boolean emitRowMarkers, RingBuffer ring) throws SQLException {
+    public SQLServerStage(Connection conn, String sql, boolean emitFieldNames, boolean emitRowMarkers, Pipe ring) throws SQLException {
         this.useMetaMessages = true;
         this.emitFieldNames = emitFieldNames;
         this.emitRowMarkers = emitRowMarkers;
@@ -47,7 +47,7 @@ public class SQLServerStage implements Runnable {
         this.ring = ring;
     }
 
-    public SQLServerStage(PreparedStatement stmt, boolean emitFieldNames, boolean emitRowMarkers, RingBuffer ring) throws SQLException {
+    public SQLServerStage(PreparedStatement stmt, boolean emitFieldNames, boolean emitRowMarkers, Pipe ring) throws SQLException {
         this.useMetaMessages = true;
         this.emitFieldNames = emitFieldNames;
         this.emitRowMarkers = emitRowMarkers;
@@ -55,7 +55,7 @@ public class SQLServerStage implements Runnable {
         this.ring = ring;
     }
 
-    public SQLServerStage(Connection conn, String sql, String message, FieldReferenceOffsetManager FROM, RingBuffer ring) throws SQLException {
+    public SQLServerStage(Connection conn, String sql, String message, FieldReferenceOffsetManager FROM, Pipe ring) throws SQLException {
         this.useMetaMessages = false;
         this.stmt = new Stmt(conn, sql);
         this.ring = ring;
@@ -63,7 +63,7 @@ public class SQLServerStage implements Runnable {
         this.FROM = FROM;
     }
 
-    public SQLServerStage(PreparedStatement stmt, String message, FieldReferenceOffsetManager FROM, RingBuffer ring) throws SQLException {
+    public SQLServerStage(PreparedStatement stmt, String message, FieldReferenceOffsetManager FROM, Pipe ring) throws SQLException {
         this.useMetaMessages = false;
         this.stmt = new Stmt(stmt);
         this.ring = ring;

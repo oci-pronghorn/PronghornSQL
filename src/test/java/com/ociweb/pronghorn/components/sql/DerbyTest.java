@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import com.ociweb.pronghorn.components.sql.DBUtil.MetaDumper;
 import com.ociweb.pronghorn.components.sql.DerbyComponent.DerbyStage;
-import com.ociweb.pronghorn.ring.RingBuffer;
-import com.ociweb.pronghorn.ring.RingBufferConfig;
+import com.ociweb.pronghorn.pipe.Pipe;
+import com.ociweb.pronghorn.pipe.PipeConfig;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 
 public class DerbyTest {
@@ -83,7 +83,7 @@ public class DerbyTest {
         Connection conn = getConnection();
         try {
             GraphManager gm = new GraphManager();
-            RingBuffer output = new RingBuffer(new RingBufferConfig((byte) 10, (byte) 24, null, metaFROM));
+            Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, metaFROM));
             DerbyStage stage = new DerbyStage(conn, sql, emitFieldNames, emitRowMarkers, output);
             MetaDumper dumper = new MetaDumper(gm, output);
             return runTest(stage, dumper);
@@ -94,7 +94,7 @@ public class DerbyTest {
 
     private List<Object> runMetaTest(PreparedStatement stmt, boolean emitFieldNames, boolean emitRowMarkers) throws Exception {
         // System.out.println("runMetaTest(): '" + stmt.toString() + "' " + emitFieldNames + " " + emitRowMarkers);
-        RingBuffer output = new RingBuffer(new RingBufferConfig((byte) 10, (byte) 24, null, metaFROM));
+        Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, metaFROM));
         GraphManager gm = new GraphManager();
         DerbyStage stage = new DerbyStage(stmt, emitFieldNames, emitRowMarkers, output);
         MetaDumper dumper = new MetaDumper(gm, output);
