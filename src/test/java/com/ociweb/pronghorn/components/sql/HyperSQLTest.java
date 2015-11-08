@@ -28,6 +28,7 @@ import org.junit.Test;
 
 import com.ociweb.pronghorn.components.sql.DBUtil.MetaDumper;
 import com.ociweb.pronghorn.components.sql.HyperSQLComponent.HyperSQLStage;
+import com.ociweb.pronghorn.pipe.MessageSchemaDynamic;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeConfig;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
@@ -97,7 +98,7 @@ public class HyperSQLTest {
         // System.out.println("runMetaTest(): '" + sql + "' " + emitFieldNames + " " + emitRowMarkers);
         Connection conn = getConnection();
         try {
-            Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, metaFROM));
+            Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, new MessageSchemaDynamic(metaFROM)));
             GraphManager gm = new GraphManager();
             HyperSQLStage stage = new HyperSQLStage(conn, sql, emitFieldNames, emitRowMarkers, output);
             MetaDumper dumper = new MetaDumper(gm, output);
@@ -109,7 +110,7 @@ public class HyperSQLTest {
 
     private List<Object> runMetaTest(PreparedStatement stmt, boolean emitFieldNames, boolean emitRowMarkers) throws Exception {
         // System.out.println("runMetaTest(): '" + stmt.toString() + "' " + emitFieldNames + " " + emitRowMarkers);
-        Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, metaFROM));
+        Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, new MessageSchemaDynamic(metaFROM)));
         GraphManager gm = new GraphManager();
         HyperSQLStage stage = new HyperSQLStage(stmt, emitFieldNames, emitRowMarkers, output);
         MetaDumper dumper = new MetaDumper(gm, output);

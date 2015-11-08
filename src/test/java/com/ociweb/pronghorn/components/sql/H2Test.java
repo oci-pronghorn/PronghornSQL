@@ -35,6 +35,7 @@ import com.ociweb.pronghorn.components.sql.DBUtil.MetaDumper;
 import com.ociweb.pronghorn.components.sql.DBUtil.UserDumper;
 import com.ociweb.pronghorn.components.sql.H2Component.H2Stage;
 import com.ociweb.pronghorn.pipe.FieldReferenceOffsetManager;
+import com.ociweb.pronghorn.pipe.MessageSchemaDynamic;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeConfig;
 import com.ociweb.pronghorn.pipe.PipeReader;
@@ -94,7 +95,7 @@ public class H2Test {
         // System.out.println("runMetaTest(): '" + sql + "' " + emitFieldNames + " " + emitRowMarkers);
         Connection conn = getConnection();
         try {
-            Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, metaFROM));
+            Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, new MessageSchemaDynamic(metaFROM)));
             GraphManager gm = new GraphManager();
             H2Stage stage = new H2Stage(conn, sql, emitFieldNames, emitRowMarkers, output);
             MetaDumper dumper = new MetaDumper(gm, output);
@@ -106,7 +107,7 @@ public class H2Test {
     
     private List<Object> runMetaTest(PreparedStatement stmt, boolean emitFieldNames, boolean emitRowMarkers) throws Exception {
         // System.out.println("runMetaTest(): '" + stmt.toString() + "' " + emitFieldNames + " " + emitRowMarkers);
-        Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, metaFROM));
+        Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, new MessageSchemaDynamic(metaFROM)));
         GraphManager gm = new GraphManager();
         H2Stage stage = new H2Stage(stmt, emitFieldNames, emitRowMarkers, output);
         MetaDumper dumper = new MetaDumper(gm, output);
@@ -117,7 +118,7 @@ public class H2Test {
         // System.out.println("runUserTest(): '" + sql + "' " + message);
         Connection conn = getConnection();
         try {
-            Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, userFROM));
+            Pipe output = new Pipe(new PipeConfig((byte) 10, (byte) 24, null, new MessageSchemaDynamic(userFROM)));
             GraphManager gm = new GraphManager();
             H2Stage stage = new H2Stage(conn, sql, message, userFROM, output);
             UserDumper dumper = new UserDumper(gm, output, decoder);
